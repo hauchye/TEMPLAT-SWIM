@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Borang Refleksi SWIM – Matematik Tingkatan 1 & 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --green-dark: #085041;
+  --green-mid: #0F6E56;
+  --green: #1D9E75;
+  --green-light: #5DCAA5;
+  --green-pale: #E1F5EE;
+  --green-mint: #9FE1CB;
+  --blue-pale: #E6F1FB;
+  --blue: #185FA5;
+  --blue-mid: #378ADD;
+  --red-pale: #FCEBEB;
+  --red: #A32D2D;
+  --red-mid: #E24B4A;
+  --amber-pale: #FAEEDA;
+  --amber: #854F0B;
+  --amber-mid: #BA7517;
+  --lime-pale: #EAF3DE;
+  --lime: #3B6D11;
+  --lime-mid: #639922;
+  --gray-pale: #F1EFE8;
+  --gray-mid: #888780;
+  --gray-dark: #2C2C2A;
+  --white: #ffffff;
+  --text: #1a1a1a;
+  --text-muted: #5f5e5a;
+  --border: #d3d1c7;
+  --shadow: rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: #f0f4f0;
+  min-height: 100vh;
+  color: var(--text);
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+  background: var(--green-dark);
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+
+.topbar-brand {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-brand .badge {
+  background: var(--green);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+
+.btn-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.btn-pdf { background: var(--green); color: white; }
+.btn-pdf:hover { background: var(--green-mid); transform: translateY(-1px); }
+.btn-reset { background: rgba(255,255,255,0.12); color: white; }
+.btn-reset:hover { background: rgba(255,255,255,0.22); }
+
+/* ===== LAYOUT ===== */
+.app-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 56px);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.sidebar-section {
+  padding: 0 16px 12px;
+}
+
+.sidebar-title {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: var(--green-pale); color: var(--green-dark); }
+.nav-item.active { background: var(--green-pale); color: var(--green-dark); font-weight: 800; }
+.nav-item.done { color: var(--green); }
+.nav-item .nav-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.nav-item.done .nav-dot { background: var(--green); border-color: var(--green); color: white; }
+.nav-item.active .nav-dot { border-color: var(--green-dark); color: var(--green-dark); }
+
+.sidebar-progress {
+  padding: 0 16px 16px;
+  border-bottom: 1px solid var(--gray-pale);
+  margin-bottom: 12px;
+}
+
+.prog-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.prog-label span { font-weight: 800; color: var(--green-dark); }
+.prog-track { height: 8px; background: var(--gray-pale); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--green-light), var(--green)); border-radius: 99px; transition: width 0.4s ease; }
+
+/* ===== MAIN ===== */
+.main {
+  padding: 28px 32px 60px;
+  max-width: 900px;
+}
+
+/* ===== SCREENS ===== */
+.screen { display: none; animation: fadeIn 0.3s ease; }
+.screen.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== HERO HEADER CARD ===== */
+.hero-card {
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+  border-radius: 24px;
+  padding: 32px 36px;
+  color: white;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+
+.hero-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: 60px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.hero-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.hero-sub { opacity: 0.8; font-size: 14px; margin-bottom: 24px; }
+
+.murid-fields {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1.2fr;
+  gap: 14px;
+}
+
+.murid-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 5px;
+}
+
+.murid-field input {
+  width: 100%;
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 9px 13px;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.murid-field input::placeholder { color: rgba(255,255,255,0.45); }
+.murid-field input:focus { outline: none; border-color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.22); }
+
+/* ===== SWIM LEGEND ===== */
+.swim-legend {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.legend-pill {
+  border-radius: 14px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.legend-pill .icon { font-size: 26px; margin-bottom: 6px; }
+.legend-pill .letter { font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 800; line-height: 1; margin-bottom: 2px; }
+.legend-pill .name { font-size: 12px; font-weight: 800; margin-bottom: 2px; }
+.legend-pill .desc { font-size: 11px; opacity: 0.75; }
+
+.legend-s { background: var(--blue-pale); color: var(--blue); }
+.legend-w { background: var(--red-pale); color: var(--red); }
+.legend-i { background: var(--amber-pale); color: var(--amber); }
+.legend-m { background: var(--lime-pale); color: var(--lime); }
+
+/* ===== QUESTION CARD ===== */
+.q-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 16px var(--shadow);
+}
+
+.q-header {
+  background: var(--green-pale);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--green-mint);
+}
+
+.q-badge {
+  background: var(--green-dark);
+  color: white;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 5px 16px;
+  white-space: nowrap;
+}
+
+.q-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.q-topik {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green);
+  background: white;
+  border-radius: 8px;
+  padding: 3px 10px;
+  margin-left: auto;
+}
+
+.swim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.swim-cell {
+  padding: 16px 20px;
+  border-right: 1px solid var(--gray-pale);
+  border-bottom: 1px solid var(--gray-pale);
+}
+
+.swim-cell:nth-child(2n) { border-right: none; }
+.swim-cell:nth-child(3), .swim-cell:nth-child(4) { border-bottom: none; }
+
+.swim-cell-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.cell-icon {
+  width: 28px; height: 28px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.icon-s { background: var(--blue-pale); }
+.icon-w { background: var(--red-pale); }
+.icon-i { background: var(--amber-pale); }
+.icon-m { background: var(--lime-pale); }
+.label-s { color: var(--blue); }
+.label-w { color: var(--red); }
+.label-i { color: var(--amber); }
+.label-m { color: var(--lime); }
+
+.swim-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13.5px;
+  color: var(--text);
+  background: #fafaf8;
+  resize: vertical;
+  line-height: 1.55;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.swim-textarea:focus {
+  outline: none;
+  border-color: var(--green);
+  background: white;
+}
+
+.swim-textarea::placeholder { color: #bbb; font-size: 12.5px; }
+
+/* ===== TINDAKAN ===== */
+.tindakan-bar {
+  background: var(--gray-pale);
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.tindakan-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 99px;
+  padding: 5px 13px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.pill:hover { border-color: var(--green); color: var(--green-dark); }
+.pill.on { background: var(--green-pale); border-color: var(--green); color: var(--green-dark); }
+.pill .ck { font-size: 13px; }
+
+/* ===== REFLEKSI SCREEN ===== */
+.refleksi-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  padding: 24px 24px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+.refleksi-card-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refleksi-card textarea {
+  width: 100%;
+  min-height: 110px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: #fafaf8;
+  resize: vertical;
+  line-height: 1.6;
+  transition: border-color 0.15s;
+}
+
+.refleksi-card textarea:focus { outline: none; border-color: var(--green); background: white; }
+
+/* ===== DONE SCREEN ===== */
+.done-wrap {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.done-big { font-size: 72px; margin-bottom: 16px; }
+
+.done-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 8px;
+}
+
+.done-sub {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.done-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.btn-done {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 28px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.btn-done.primary { background: var(--green); color: white; box-shadow: 0 4px 18px rgba(29,158,117,0.3); }
+.btn-done.primary:hover { background: var(--green-mid); transform: translateY(-2px); }
+.btn-done.secondary { background: white; color: var(--green-dark); border: 2px solid var(--green); }
+.btn-done.secondary:hover { background: var(--green-pale); }
+
+/* ===== SCREEN NAV BUTTONS ===== */
+.screen-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  gap: 14px;
+}
+
+.btn-nav {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 22px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-prev { background: white; border: 2px solid var(--border); color: var(--text-muted); }
+.btn-prev:hover { border-color: var(--green); color: var(--green-dark); }
+.btn-next { background: var(--green-dark); color: white; }
+.btn-next:hover { background: var(--green-mid); }
+.btn-prev:disabled { opacity: 0.3; cursor: default; }
+.btn-prev:disabled:hover { border-color: var(--border); color: var(--text-muted); }
+
+/* ===== SCREEN HEADER ===== */
+.screen-header {
+  margin-bottom: 24px;
+}
+
+.screen-header h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 4px;
+}
+
+.screen-header p { font-size: 14px; color: var(--text-muted); }
+
+/* ===== START SCREEN ===== */
+.start-wrap {
+  background: white;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 4px 24px var(--shadow);
+}
+
+.start-emoji { font-size: 64px; margin-bottom: 16px; }
+.start-title { font-family: 'Baloo 2', sans-serif; font-size: 26px; font-weight: 800; color: var(--green-dark); margin-bottom: 10px; }
+.start-desc { font-size: 15px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.7; max-width: 480px; margin-left: auto; margin-right: auto; }
+.start-go { background: var(--green); color: white; border: none; border-radius: 14px; padding: 14px 36px; font-family: 'Nunito', sans-serif; font-size: 17px; font-weight: 800; cursor: pointer; transition: all 0.18s; box-shadow: 0 4px 18px rgba(29,158,117,0.25); }
+.start-go:hover { background: var(--green-mid); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(29,158,117,0.3); }
+
+/* ===== PDF EXPORT TEMPLATE ===== */
+#pdf-template {
+  display: none;
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 794px;
+  background: white;
+  font-family: 'Nunito', sans-serif;
+  color: #1a1a1a;
+  padding: 40px;
+}
+
+.pdf-header {
+  background: #085041;
+  color: white;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+.pdf-header h1 { font-family: 'Baloo 2', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.pdf-header p { font-size: 13px; opacity: 0.8; margin-bottom: 14px; }
+
+.pdf-murid-row { display: flex; gap: 20px; }
+.pdf-murid-field { flex: 1; }
+.pdf-murid-field label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.65; display: block; margin-bottom: 3px; }
+.pdf-murid-field .val { font-size: 15px; font-weight: 700; border-bottom: 1.5px solid rgba(255,255,255,0.35); padding-bottom: 4px; }
+
+.pdf-swim-title {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pdf-swim-pill {
+  flex: 1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.pdf-s { background: #E6F1FB; color: #185FA5; }
+.pdf-w { background: #FCEBEB; color: #A32D2D; }
+.pdf-i { background: #FAEEDA; color: #854F0B; }
+.pdf-m { background: #EAF3DE; color: #3B6D11; }
+.pdf-swim-pill .pdf-letter { font-size: 18px; font-family: 'Baloo 2', sans-serif; font-weight: 800; display: block; }
+
+.pdf-q {
+  border: 1.5px solid #d3d1c7;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  page-break-inside: avoid;
+}
+
+.pdf-q-header {
+  background: #E1F5EE;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #9FE1CB;
+}
+
+.pdf-q-badge {
+  background: #085041;
+  color: white;
+  border-radius: 8px;
+  padding: 3px 13px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.pdf-q-name { font-family: 'Baloo 2', sans-serif; font-size: 15px; font-weight: 700; color: #085041; }
+.pdf-topik { font-size: 11px; font-weight: 700; background: white; border-radius: 6px; padding: 2px 9px; margin-left: auto; color: #1D9E75; }
+
+.pdf-swim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pdf-swim-cell {
+  padding: 10px 14px;
+  border-right: 1px solid #f0ede6;
+  border-bottom: 1px solid #f0ede6;
+  min-height: 70px;
+}
+
+.pdf-swim-cell:nth-child(2n) { border-right: none; }
+.pdf-swim-cell:nth-child(3), .pdf-swim-cell:nth-child(4) { border-bottom: none; }
+
+.pdf-swim-cell-label {
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pdf-swim-cell-text {
+  font-size: 12.5px;
+  color: #333;
+  line-height: 1.55;
+}
+
+.pdf-tindakan {
+  background: #f8f7f4;
+  padding: 10px 14px;
+  border-top: 1px solid #e4e2db;
+}
+
+.pdf-tindakan-title { font-size: 11px; font-weight: 800; color: #888780; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+.pdf-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.pdf-pill { background: #E1F5EE; color: #085041; border-radius: 99px; padding: 3px 11px; font-size: 11px; font-weight: 700; }
+.pdf-pill-empty { color: #bbb; font-size: 12px; }
+
+.pdf-refleksi {
+  border: 1.5px solid #d3d1c7;
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 16px;
+  page-break-inside: avoid;
+}
+
+.pdf-refleksi h3 { font-family: 'Baloo 2', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #085041; }
+.pdf-refleksi p { font-size: 13px; line-height: 1.6; color: #333; min-height: 40px; }
+
+.pdf-footer {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1.5px solid #e4e2db;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #888780;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,80,65,0.85);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  color: white;
+}
+
+.loading-overlay.show { display: flex; }
+.loading-spinner {
+  width: 48px; height: 48px;
+  border: 4px solid rgba(255,255,255,0.25);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 700; }
+.loading-sub { font-size: 14px; opacity: 0.75; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 16px 14px 40px; }
+  .murid-fields { grid-template-columns: 1fr; }
+  .swim-legend { grid-template-columns: repeat(2, 1fr); }
+  .swim-grid { grid-template-columns: 1fr; }
+  .swim-cell:nth-child(2n) { border-right: 1px solid var(--gray-pale); }
+  .swim-cell:nth-child(3) { border-bottom: 1px solid var(--gray-pale); }
+  .swim-cell:last-child { border-bottom: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    📘 Borang Refleksi SWIM
+    <span class="badge">Matematik T1 & T2</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-top btn-reset" onclick="resetForm()">🔄 Mula Semula</button>
+    <button class="btn-top btn-pdf" id="topbar-pdf-btn" onclick="exportPDF()" style="display:none">📄 Export PDF</button>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Sedang Jana PDF...</div>
+  <div class="loading-sub">Sila tunggu sebentar 🙏</div>
+</div>
+
+<!-- PDF TEMPLATE (hidden, used for export) -->
+<div id="pdf-template"></div>
+
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-progress">
+      <div class="prog-label">Kemajuan <span id="prog-text">0%</span></div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Maklumat</div>
+      <div class="nav-item" id="nav-start" onclick="goScreen('start')">
+        <div class="nav-dot">🏠</div>
+        <span>Mula</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Soalan Peperiksaan</div>
+      <div id="sidebar-soalan"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Penutup</div>
+      <div class="nav-item" id="nav-refleksi" onclick="goScreen('refleksi')">
+        <div class="nav-dot">✍️</div>
+        <span>Refleksi Murid & Guru</span>
+      </div>
+      <div class="nav-item" id="nav-done" onclick="goScreen('done')">
+        <div class="nav-dot">🎉</div>
+        <span>Selesai & Muat Turun</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- START SCREEN -->
+    <div class="screen active" id="screen-start">
+      <div class="hero-card">
+        <div class="hero-eyebrow">📘 Matematik Tingkatan 1 & 2 – Bab 4: Poligon</div>
+        <div class="hero-title">Borang Refleksi SWIM</div>
+        <div class="hero-sub">Analisis Kegagalan Menjawab Item Soalan Peperiksaan</div>
+
+        <div class="murid-fields">
+          <div class="murid-field">
+            <label>Nama Murid</label>
+            <input type="text" id="nama" placeholder="Tulis nama penuh kamu..." />
+          </div>
+          <div class="murid-field">
+            <label>Kelas</label>
+            <input type="text" id="kelas" placeholder="Contoh: 1 Amanah" />
+          </div>
+          <div class="murid-field">
+            <label>Tarikh Analisis</label>
+            <input type="date" id="tarikh" />
+          </div>
+        </div>
+      </div>
+
+      <div class="swim-legend">
+        <div class="legend-pill legend-s">
+          <div class="icon">💪</div>
+          <div class="letter">S</div>
+          <div class="name">Strength</div>
+          <div class="desc">Apa yang kamu tahu</div>
+        </div>
+        <div class="legend-pill legend-w">
+          <div class="icon">❌</div>
+          <div class="letter">W</div>
+          <div class="name">Weakness</div>
+          <div class="desc">Kesilapan / kelemahan</div>
+        </div>
+        <div class="legend-pill legend-i">
+          <div class="icon">💡</div>
+          <div class="letter">I</div>
+          <div class="name">Improvement</div>
+          <div class="desc">Cadangan intervensi</div>
+        </div>
+        <div class="legend-pill legend-m">
+          <div class="icon">📋</div>
+          <div class="letter">M</div>
+          <div class="name">Monitoring</div>
+          <div class="desc">Pemantauan susulan</div>
+        </div>
+      </div>
+
+      <div class="start-wrap">
+        <div class="start-emoji">✏️</div>
+        <div class="start-title">Selamat Datang, Pejuang Matematik!</div>
+        <div class="start-desc">
+          Isi nama, kelas, dan tarikh di atas. Lepas tu, tekan butang di bawah untuk mula refleksi. Kita akan tengok setiap soalan satu persatu. Kamu boleh buat ini! 💪
+        </div>
+        <button class="start-go" onclick="goScreen('q0')">▶ Mula Refleksi Sekarang</button>
+      </div>
+    </div>
+
+    <!-- QUESTION SCREENS (generated by JS) -->
+    <div id="question-screens"></div>
+
+    <!-- REFLEKSI SCREEN -->
+    <div class="screen" id="screen-refleksi">
+      <div class="screen-header">
+        <h1>✍️ Refleksi Akhir</h1>
+        <p>Tulis perasaan dan pendapat kamu tentang peperiksaan ini.</p>
+      </div>
+
+      <div class="refleksi-card">
+        <div class="refleksi-card-title">🌟 Refleksi Murid</div>
+        <textarea id="refleksi-murid" placeholder="Ceritakan pengalaman kamu... Soalan mana yang susah? Apa yang kamu nak buat berbeza kali depan? Apa perasaan kamu selepas isi borang ni?"></textarea>
+      </div>
+
+      <div class="refleksi-card">
+        <div class="refleksi-card-title">📝 Refleksi Guru</div>
+        <textarea id="refleksi-guru" placeholder="Catatan guru tentang prestasi dan perkembangan murid. Cadangan tindakan selanjutnya..."></textarea>
+      </div>
+
+      <div class="screen-nav">
+        <button class="btn-nav btn-prev" onclick="goScreenRel(-1)">◀ Sebelumnya</button>
+        <button class="btn-nav btn-next" onclick="goScreen('done')">Selesai ▶</button>
+      </div>
+    </div>
+
+    <!-- DONE SCREEN -->
+    <div class="screen" id="screen-done">
+      <div class="done-wrap">
+        <div class="done-big">🎉</div>
+        <div class="done-title">Tahniah! Kamu Dah Siap!</div>
+        <div class="done-sub">
+          Borang Refleksi SWIM kamu telah lengkap.<br />
+          Sekarang muat turun sebagai PDF dan tunjukkan kepada cikgu kamu!
+        </div>
+        <div class="done-buttons">
+          <button class="btn-done primary" onclick="exportPDF()">📄 Muat Turun PDF</button>
+          <button class="btn-done secondary" onclick="goScreen('q0')">🔍 Semak Semula</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const SOALAN = [
+  { id: 'q0',  num: 'Soalan 18',  topik: 'Poligon' },
+  { id: 'q1',  num: 'Soalan 19',  topik: 'Poligon' },
+  { id: 'q2',  num: 'Soalan 20',  topik: 'Poligon' },
+  { id: 'q3',  num: 'Soalan 22a', topik: 'Poligon' },
+  { id: 'q4',  num: 'Soalan 22b', topik: 'Poligon' },
+  { id: 'q5',  num: 'Soalan 30a', topik: 'Poligon' },
+  { id: 'q6',  num: 'Soalan 30b', topik: 'Poligon' },
+  { id: 'q7',  num: 'Soalan 30c', topik: 'Poligon' },
+  { id: 'q8',  num: 'Soalan 31a', topik: 'Poligon' },
+  { id: 'q9',  num: 'Soalan 32b', topik: 'Poligon' },
+  { id: 'q10', num: 'Soalan 33c', topik: 'Poligon' },
+];
+
+const TINDAKAN = [
+  'Latih tubi tambahan',
+  'Aktiviti Kumpulan',
+  'Intervensi pemulihan',
+  'Penggunaan bahan digital',
+  'Kuiz / Google Form',
+  'Bimbingan individu',
+];
+
+const answers = {};
+SOALAN.forEach(q => { answers[q.id] = { s:'', w:'', i:'', m:'', tindakan:[] }; });
+
+let currentScreen = 'start';
+
+// ---- BUILD QUESTION SCREENS ----
+function buildQuestionScreens() {
+  const container = document.getElementById('question-screens');
+  container.innerHTML = SOALAN.map((q, idx) => `
+    <div class="screen" id="screen-${q.id}">
+      <div class="screen-header">
+        <h1>${q.num} – ${q.topik}</h1>
+        <p>Isi semua bahagian SWIM untuk soalan ini. Jawab dengan jujur ya! 😊</p>
+      </div>
+      <div class="q-card">
+        <div class="q-header">
+          <span class="q-badge">${q.num}</span>
+          <span class="q-title">Refleksi Soalan</span>
+          <span class="q-topik">📐 ${q.topik}</span>
+        </div>
+        <div class="swim-grid">
+          <div class="swim-cell">
+            <div class="swim-cell-label">
+              <div class="cell-icon icon-s">💪</div>
+              <span class="label-s">S – Kekuatan (Strength)</span>
+            </div>
+            <textarea class="swim-textarea" id="${q.id}-s" placeholder="Apa yang kamu faham atau tahu tentang soalan ini?" oninput="saveAnswer('${q.id}')"></textarea>
+          </div>
+          <div class="swim-cell">
+            <div class="swim-cell-label">
+              <div class="cell-icon icon-w">❌</div>
+              <span class="label-w">W – Kelemahan (Weakness)</span>
+            </div>
+            <textarea class="swim-textarea" id="${q.id}-w" placeholder="Di mana kamu silap atau rasa keliru?" oninput="saveAnswer('${q.id}')"></textarea>
+          </div>
+          <div class="swim-cell">
+            <div class="swim-cell-label">
+              <div class="cell-icon icon-i">💡</div>
+              <span class="label-i">I – Penambahbaikan (Improvement)</span>
+            </div>
+            <textarea class="swim-textarea" id="${q.id}-i" placeholder="Apa yang kamu nak buat supaya lebih faham?" oninput="saveAnswer('${q.id}')"></textarea>
+          </div>
+          <div class="swim-cell">
+            <div class="swim-cell-label">
+              <div class="cell-icon icon-m">📋</div>
+              <span class="label-m">M – Pemantauan (Monitoring)</span>
+            </div>
+            <textarea class="swim-textarea" id="${q.id}-m" placeholder="Bagaimana kamu nak pastikan kamu ingat perkara ini?" oninput="saveAnswer('${q.id}')"></textarea>
+          </div>
+        </div>
+        <div class="tindakan-bar">
+          <div class="tindakan-title">✅ Cadangan Tindakan Susulan – pilih yang berkaitan:</div>
+          <div class="pills-row" id="${q.id}-pills">
+            ${TINDAKAN.map(t => `
+              <label class="pill" onclick="toggleTindakan('${q.id}','${t}',this)">
+                <span class="ck">○</span> ${t}
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="screen-nav">
+        <button class="btn-nav btn-prev" ${idx === 0 ? '' : ''} onclick="goScreen('${idx === 0 ? 'start' : SOALAN[idx-1].id}')">◀ Sebelumnya</button>
+        <span style="font-size:13px;color:#888;font-weight:700;">${idx+1} / ${SOALAN.length}</span>
+        <button class="btn-nav btn-next" onclick="goScreen('${idx === SOALAN.length-1 ? 'refleksi' : SOALAN[idx+1].id}')">
+          ${idx === SOALAN.length-1 ? 'Refleksi ▶' : 'Seterusnya ▶'}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---- SIDEBAR ----
+function buildSidebar() {
+  const container = document.getElementById('sidebar-soalan');
+  container.innerHTML = SOALAN.map((q, idx) => `
+    <div class="nav-item" id="nav-${q.id}" onclick="goScreen('${q.id}')">
+      <div class="nav-dot" id="dot-${q.id}">${idx+1}</div>
+      <span>${q.num}</span>
+    </div>
+  `).join('');
+}
+
+function saveAnswer(qid) {
+  answers[qid].s = document.getElementById(qid+'-s').value;
+  answers[qid].w = document.getElementById(qid+'-w').value;
+  answers[qid].i = document.getElementById(qid+'-i').value;
+  answers[qid].m = document.getElementById(qid+'-m').value;
+  updateProgress();
+}
+
+function toggleTindakan(qid, val, el) {
+  const idx = answers[qid].tindakan.indexOf(val);
+  if (idx === -1) {
+    answers[qid].tindakan.push(val);
+    el.classList.add('on');
+    el.querySelector('.ck').textContent = '✓';
+  } else {
+    answers[qid].tindakan.splice(idx, 1);
+    el.classList.remove('on');
+    el.querySelector('.ck').textContent = '○';
+  }
+}
+
+function updateProgress() {
+  let filled = 0;
+  SOALAN.forEach(q => {
+    const a = answers[q.id];
+    if (a.s || a.w || a.i || a.m) {
+      filled++;
+      document.getElementById('dot-'+q.id).style.background = '#1D9E75';
+      document.getElementById('dot-'+q.id).style.color = 'white';
+      document.getElementById('dot-'+q.id).style.borderColor = '#1D9E75';
+      document.getElementById('nav-'+q.id).classList.add('done');
+    }
+  });
+  const pct = Math.round((filled / SOALAN.length) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = pct + '%';
+}
+
+function goScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('screen-' + name).classList.add('active');
+  currentScreen = name;
+
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+
+  const pdfBtn = document.getElementById('topbar-pdf-btn');
+  pdfBtn.style.display = (name === 'done' || name === 'refleksi') ? 'flex' : 'none';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goScreenRel(dir) {
+  const allScreens = ['start', ...SOALAN.map(q=>q.id), 'refleksi', 'done'];
+  const cur = allScreens.indexOf(currentScreen);
+  const next = cur + dir;
+  if (next >= 0 && next < allScreens.length) goScreen(allScreens[next]);
+}
+
+function resetForm() {
+  if (!confirm('Adakah kamu pasti nak mula semula? Semua jawapan akan dipadam.')) return;
+  SOALAN.forEach(q => { answers[q.id] = {s:'',w:'',i:'',m:'',tindakan:[]}; });
+  document.getElementById('nama').value = '';
+  document.getElementById('kelas').value = '';
+  document.getElementById('tarikh').value = new Date().toISOString().split('T')[0];
+  SOALAN.forEach(q => {
+    ['s','w','i','m'].forEach(f => { const el = document.getElementById(q.id+'-'+f); if(el) el.value=''; });
+    const pills = document.querySelectorAll('#'+q.id+'-pills .pill');
+    pills.forEach(p => { p.classList.remove('on'); p.querySelector('.ck').textContent='○'; });
+    const dot = document.getElementById('dot-'+q.id);
+    if(dot){ dot.style.background=''; dot.style.color=''; dot.style.borderColor=''; }
+    document.getElementById('nav-'+q.id).classList.remove('done');
+  });
+  document.getElementById('refleksi-murid').value = '';
+  document.getElementById('refleksi-guru').value = '';
+  document.getElementById('prog-fill').style.width = '0%';
+  document.getElementById('prog-text').textContent = '0%';
+  goScreen('start');
+}
+
+// ---- PDF EXPORT ----
+async function exportPDF() {
+  const nama = document.getElementById('nama').value || 'Tidak dinyatakan';
+  const kelas = document.getElementById('kelas').value || '–';
+  const tarikh = document.getElementById('tarikh').value || '–';
+  const refleksiMurid = document.getElementById('refleksi-murid').value;
+  const refleksiGuru = document.getElementById('refleksi-guru').value;
+
+  const tpl = document.getElementById('pdf-template');
+  tpl.style.display = 'block';
+
+  tpl.innerHTML = `
+    <div class="pdf-header">
+      <p>📘 Matematik Tingkatan 1 & 2 – Bab 4: Poligon</p>
+      <h1>Borang Refleksi SWIM</h1>
+      <div class="pdf-murid-row">
+        <div class="pdf-murid-field"><label>Nama Murid</label><div class="val">${nama}</div></div>
+        <div class="pdf-murid-field"><label>Kelas</label><div class="val">${kelas}</div></div>
+        <div class="pdf-murid-field"><label>Tarikh Analisis</label><div class="val">${tarikh}</div></div>
+      </div>
+    </div>
+
+    <div class="pdf-swim-title">
+      <div class="pdf-swim-pill pdf-s"><span class="pdf-letter">S</span>Strength / Kekuatan</div>
+      <div class="pdf-swim-pill pdf-w"><span class="pdf-letter">W</span>Weakness / Kelemahan</div>
+      <div class="pdf-swim-pill pdf-i"><span class="pdf-letter">I</span>Improvement / Penambahbaikan</div>
+      <div class="pdf-swim-pill pdf-m"><span class="pdf-letter">M</span>Monitoring / Pemantauan</div>
+    </div>
+
+    ${SOALAN.map(q => {
+      const a = answers[q.id];
+      const tArr = a.tindakan || [];
+      return `
+      <div class="pdf-q">
+        <div class="pdf-q-header">
+          <span class="pdf-q-badge">${q.num}</span>
+          <span class="pdf-q-name">Refleksi Soalan</span>
+          <span class="pdf-topik">📐 ${q.topik}</span>
+        </div>
+        <div class="pdf-swim-grid">
+          <div class="pdf-swim-cell">
+            <div class="pdf-swim-cell-label" style="color:#185FA5">💪 S – Kekuatan</div>
+            <div class="pdf-swim-cell-text">${a.s || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</div>
+          </div>
+          <div class="pdf-swim-cell">
+            <div class="pdf-swim-cell-label" style="color:#A32D2D">❌ W – Kelemahan</div>
+            <div class="pdf-swim-cell-text">${a.w || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</div>
+          </div>
+          <div class="pdf-swim-cell">
+            <div class="pdf-swim-cell-label" style="color:#854F0B">💡 I – Penambahbaikan</div>
+            <div class="pdf-swim-cell-text">${a.i || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</div>
+          </div>
+          <div class="pdf-swim-cell">
+            <div class="pdf-swim-cell-label" style="color:#3B6D11">📋 M – Pemantauan</div>
+            <div class="pdf-swim-cell-text">${a.m || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</div>
+          </div>
+        </div>
+        <div class="pdf-tindakan">
+          <div class="pdf-tindakan-title">✅ Cadangan Tindakan Susulan</div>
+          <div class="pdf-pills">
+            ${tArr.length > 0 ? tArr.map(t=>`<span class="pdf-pill">${t}</span>`).join('') : '<span class="pdf-pill-empty">Tiada dipilih</span>'}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="pdf-refleksi">
+      <h3>🌟 Refleksi Murid</h3>
+      <p>${refleksiMurid || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</p>
+    </div>
+    <div class="pdf-refleksi">
+      <h3>📝 Refleksi Guru</h3>
+      <p>${refleksiGuru || '<span style="color:#ccc;font-style:italic">Tidak diisi</span>'}</p>
+    </div>
+
+    <div class="pdf-footer">
+      <span>Borang Refleksi SWIM – Matematik Tingkatan 1 & 2 – Bab 4: Poligon</span>
+      <span>Nama: ${nama} | Kelas: ${kelas} | Tarikh: ${tarikh}</span>
+    </div>
+  `;
+
+  document.getElementById('loading').classList.add('show');
+
+  await new Promise(r => setTimeout(r, 300));
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = 210;
+    const pageH = 297;
+    const margin = 0;
+    const contentW = pageW - margin * 2;
+
+    const canvas = await html2canvas(tpl, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      width: 794,
+      windowWidth: 794,
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.92);
+    const imgWidth = contentW;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let yPos = margin;
+    let remaining = imgHeight;
+    let sourceY = 0;
+    let pageNum = 0;
+
+    while (remaining > 0) {
+      if (pageNum > 0) pdf.addPage();
+      const sliceH = Math.min(pageH - margin * 2, remaining);
+      const srcSliceH = (sliceH / imgHeight) * canvas.height;
+
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = srcSliceH;
+      const ctx = sliceCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, sourceY, canvas.width, srcSliceH, 0, 0, canvas.width, srcSliceH);
+
+      const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      pdf.addImage(sliceData, 'JPEG', margin, margin, imgWidth, sliceH);
+
+      sourceY += srcSliceH;
+      remaining -= sliceH;
+      pageNum++;
+    }
+
+    const safeName = nama.replace(/[^a-zA-Z0-9\s]/g,'').trim().replace(/\s+/g,'_') || 'Murid';
+    pdf.save(`RefleksiSWIM_${safeName}_${kelas.replace(/\s+/g,'')}.pdf`);
+  } catch (err) {
+    alert('Ralat semasa menjana PDF. Sila cuba lagi.');
+    console.error(err);
+  }
+
+  document.getElementById('loading').classList.remove('show');
+  tpl.style.display = 'none';
+}
+
+// ---- INIT ----
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tarikh').value = new Date().toISOString().split('T')[0];
+  buildQuestionScreens();
+  buildSidebar();
+  goScreen('start');
+});
+</script>
+</body>
+</html>
